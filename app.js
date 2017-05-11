@@ -147,8 +147,7 @@ function getLichThiDau(url, callback) {
     request(url, function (err, res, body) {
         if (!err && res.statusCode == 200) {
             var $ = cheerio.load(body);
-            $('.coming_box .fx_coming tr.ls:first-child').each(function () {
-
+            $('.coming_box .fx_coming tr.ls').each(function () {
                 var id_tour = getParameterByName('LeagueID', url);
 
                 var name_tour = $(this).children().children('a').text();
@@ -411,12 +410,11 @@ function getParameterByName(name, url) {
 }
 
 //các hàm chạy job
-
 for (var $i = 0; $i < list_doi_bong.length; $i++) {
     var leagueID = list_doi_bong[$i].LeagueID;
     if (typeof leagueID != 'undefined') {
         getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
-        getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
+     //   getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
     }
 }
 
@@ -428,7 +426,6 @@ for (var $i = 0; $i < list_doi_bong.length; $i++) {
 }
 
 //các hàm chạy 1 lần
-
 // getListTeam();
 // for (var $i = 0; $i < list_doi_bong.length; $i++) {
 //     var leagueID = list_doi_bong[$i].LeagueID;
@@ -437,7 +434,6 @@ for (var $i = 0; $i < list_doi_bong.length; $i++) {
 //     }
 // }
 //
-
 
 // connection.query('truncate doi_bong', function (error, result) {
 //     if (!error) {
