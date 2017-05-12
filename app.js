@@ -97,6 +97,10 @@ function getKetQuaThiDau(url, callback) {
                             var score = $(this).children().eq(2).text();
                             score = score.split('-');
                             var guest = $(this).children().eq(3).children('a').text();
+                            var link_match = $(this).children().eq(4).children('a').attr('href');
+                            if(link_match!= 'undefined') {
+                                link_match = 'http://bongdaso.com/' + link_match;
+                            }
 
                             if (home.trim() != '' && guest.trim() != '') {
                                 var metadata = {
@@ -108,7 +112,8 @@ function getKetQuaThiDau(url, callback) {
                                     is_finish: 1,
                                     time_start: time_start1,
                                     LeagueID: id_tour,
-                                    date_query: time_start2
+                                    date_query: time_start2,
+                                    link_match: link_match
                                 }
 
                                 var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + "'"+time_start1 +"'"+ ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1";
@@ -179,6 +184,10 @@ function getLichThiDau(url, callback) {
                             home = home.trim();
                             guest = match[1];
 
+                            var link_match = $(this).children().eq(5).children('a').attr('href');
+                            if(typeof link_match != 'undefined') {
+                                link_match = 'http://bongdaso.com/' + link_match;
+                            }
                             if (typeof  home != 'undefined' && typeof  guest != 'undefined' && typeof time_start1 != 'undefined') {
                                 var metadata = {
                                     home_club_name: home,
@@ -188,7 +197,8 @@ function getLichThiDau(url, callback) {
                                     is_postponed: 2,
                                     time_start: time_start1,
                                     LeagueID: id_tour,
-                                    date_query: time_start2
+                                    date_query: time_start2,
+                                    link_match:link_match
                                 }
                                 var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"'+ ' LIMIT 1';
                                 connection.query(queryString, function (err, rows, fields) {
@@ -358,15 +368,15 @@ function  genListDoiBong(url, callback) {
         if (!err && res.statusCode == 200) {
             var $ = cheerio.load(body);
             $('.menu_tab_box .club_list a h4').each(function () {
-               var name = $(this).text().trim();
+                var name = $(this).text().trim();
 
-               var nn = ChangeToSlug(name);
-               nn=nn.replace(' ','_');
-               name1 = nn + '_fc';
-               var data = {
-                   name: name,
-                   tag: name1
-               }
+                var nn = ChangeToSlug(name);
+                nn=nn.replace(' ','_');
+                name1 = nn + '_fc';
+                var data = {
+                    name: name,
+                    tag: name1
+                }
                 connection.query('INSERT INTO doi_bong SET ?', data, function (error, result) {
                     if (!error) {
                         console.log('insert doi_bong success');
@@ -381,11 +391,24 @@ function  genListDoiBong(url, callback) {
     });
 }
 
+function  LiveScore(url, callback) {
+    process.env.TZ = 'Asia/Ho_Chi_Minh';
+    var date = new Date();
+    console.log(date);
+    var queryString = "SELECT*FROM ketqua WHERE time_start BETWEEN date('2017-05-03') AND date('2017-05-18') ORDER BY time_start DESC";
+    console.log(queryString);
+    connection.query(queryString, function (error, result) {
+        if (!error) {
+        } else {
+            console.log('co loi xay ra');
+        }
+    });
+}
+
 function ChangeToSlug(title)
 {
     var  slug;
     slug = title.toLowerCase();
-
     //Đổi ký tự có dấu thành không dấu
     slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
     slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');
@@ -410,20 +433,20 @@ function getParameterByName(name, url) {
 }
 
 //các hàm chạy job
-for (var $i = 0; $i < list_doi_bong.length; $i++) {
-    var leagueID = list_doi_bong[$i].LeagueID;
-    if (typeof leagueID != 'undefined') {
-        getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
-     //   getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
-    }
-}
-
-for (var $i = 0; $i < list_doi_bong.length; $i++) {
-    var leagueID = list_doi_bong[$i].LeagueID;
-    if (typeof leagueID != 'undefined') {
-        getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID);
-    }
-}
+// for (var $i = 0; $i < list_doi_bong.length; $i++) {
+//     var leagueID = list_doi_bong[$i].LeagueID;
+//     if (typeof leagueID != 'undefined') {
+//         getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
+//         getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
+//     }
+// }
+//
+// for (var $i = 0; $i < list_doi_bong.length; $i++) {
+//     var leagueID = list_doi_bong[$i].LeagueID;
+//     if (typeof leagueID != 'undefined') {
+//         getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID);
+//     }
+// }
 
 //các hàm chạy 1 lần
 // getListTeam();
@@ -447,7 +470,7 @@ for (var $i = 0; $i < list_doi_bong.length; $i++) {
 //     genListDoiBong('http://bongdaso.com/Association.aspx?FBAssID='+lis_tab_laydoibong[$i]+'&Tab=1');
 //  }
 
-
+LiveScore();
 
 
 
