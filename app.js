@@ -1,7 +1,7 @@
 var cheerio = require('cheerio');
 var request = require('request');
-var mysql = require('mysql');
 var fs = require('fs');
+var mysql = require('mysql');
 
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -393,14 +393,20 @@ function  genListDoiBong(url, callback) {
 
 function  LiveScore(url, callback) {
     process.env.TZ = 'Asia/Ho_Chi_Minh';
-    var date = new Date();
-    console.log(date);
-    var queryString = "SELECT*FROM ketqua WHERE time_start BETWEEN date('2017-05-03') AND date('2017-05-18') ORDER BY time_start DESC";
-    console.log(queryString);
+
+    var date1 = new Date(Date.now() - 900000);
+    var date2 = new Date(Date.now() + 10800000);
+
+    var date_botton = date1.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date1.getDate()+' '+date1.getHours()+':'+date1.getMinutes()+':'+date1.getSeconds();
+    var date_top = date2.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date2.getDate()+' '+date2.getHours()+':'+date2.getMinutes()+':'+date2.getSeconds();
+
+    var queryString = "SELECT*FROM ketqua WHERE time_start BETWEEN "+"'"+date_botton+"'"+" AND "+"'"+date_top+"'"+" ORDER BY time_start DESC";
+
     connection.query(queryString, function (error, result) {
         if (!error) {
+            console.log(result);
         } else {
-            console.log('co loi xay ra');
+            console.log(error);
         }
     });
 }
@@ -433,20 +439,20 @@ function getParameterByName(name, url) {
 }
 
 //các hàm chạy job
-// for (var $i = 0; $i < list_doi_bong.length; $i++) {
-//     var leagueID = list_doi_bong[$i].LeagueID;
-//     if (typeof leagueID != 'undefined') {
-//         getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
-//         getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
-//     }
-// }
-//
-// for (var $i = 0; $i < list_doi_bong.length; $i++) {
-//     var leagueID = list_doi_bong[$i].LeagueID;
-//     if (typeof leagueID != 'undefined') {
-//         getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID);
-//     }
-// }
+for (var $i = 0; $i < list_doi_bong.length; $i++) {
+    var leagueID = list_doi_bong[$i].LeagueID;
+    if (typeof leagueID != 'undefined') {
+        getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
+        getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
+    }
+}
+
+for (var $i = 0; $i < list_doi_bong.length; $i++) {
+    var leagueID = list_doi_bong[$i].LeagueID;
+    if (typeof leagueID != 'undefined') {
+        getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID);
+    }
+}
 
 //các hàm chạy 1 lần
 // getListTeam();
