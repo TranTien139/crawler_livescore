@@ -1,14 +1,20 @@
+var express = require('express')
+var app = express();
 var cheerio = require('cheerio');
 var request = require('request');
 var fs = require('fs');
 var mysql = require('mysql');
+var bodyParser = require('body-parser');
+
+var server = require('http').createServer(app);
+var port = process.env.PORT || 8080;
 
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
     database: 'livescore',
-    charset:'utf8'
+    charset: 'utf8'
 });
 
 connection.connect();
@@ -89,7 +95,7 @@ function getKetQuaThiDau(url, callback) {
                             var date = new Date();
                             var tach_time = time_start[0].split('/');
 
-                            var time_start1 = date.getFullYear() + '/' + tach_time[1] + '/'+ tach_time[0] + ' ' + time_start[1] + ':00';
+                            var time_start1 = date.getFullYear() + '/' + tach_time[1] + '/' + tach_time[0] + ' ' + time_start[1] + ':00';
 
                             var time_start2 = time_start[0] + '/' + date.getFullYear();
 
@@ -98,7 +104,7 @@ function getKetQuaThiDau(url, callback) {
                             score = score.split('-');
                             var guest = $(this).children().eq(3).children('a').text();
                             var link_match = $(this).children().eq(4).children('a').attr('href');
-                            if(link_match!= 'undefined') {
+                            if (link_match != 'undefined') {
                                 link_match = 'http://bongdaso.com/' + link_match;
                             }
 
@@ -116,11 +122,11 @@ function getKetQuaThiDau(url, callback) {
                                     link_match: link_match
                                 }
 
-                                var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + "'"+time_start1 +"'"+ ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1";
+                                var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + "'" + time_start1 + "'" + ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1";
                                 connection.query(queryString, function (err, rows, fields) {
-                                   if (err) throw err;
+                                    if (err) throw err;
                                     if (rows.length > 0) {
-                                        connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + id_tour + ' AND time_start=' + "'"+time_start1 +"'" + ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1", metadata, function (error, result) {
+                                        connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + id_tour + ' AND time_start=' + "'" + time_start1 + "'" + ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1", metadata, function (error, result) {
                                             if (!error) {
                                                 console.log('update ketqua success');
                                             } else {
@@ -136,7 +142,7 @@ function getKetQuaThiDau(url, callback) {
                                             }
                                         });
                                     }
-                              });
+                                });
                             }
                         }
                     }
@@ -173,7 +179,7 @@ function getLichThiDau(url, callback) {
                             var date = new Date();
 
                             var tach_time = time_start[0].split('/');
-                            var time_start1 = date.getFullYear() + '/' + tach_time[1] + '/'+ tach_time[0] + ' ' + time_start[1] + ':00';
+                            var time_start1 = date.getFullYear() + '/' + tach_time[1] + '/' + tach_time[0] + ' ' + time_start[1] + ':00';
 
                             var time_start2 = time_start[0] + '/' + date.getFullYear();
 
@@ -185,7 +191,7 @@ function getLichThiDau(url, callback) {
                             guest = match[1];
 
                             var link_match = $(this).children().eq(5).children('a').attr('href');
-                            if(typeof link_match != 'undefined') {
+                            if (typeof link_match != 'undefined') {
                                 link_match = 'http://bongdaso.com/' + link_match;
                             }
                             if (typeof  home != 'undefined' && typeof  guest != 'undefined' && typeof time_start1 != 'undefined') {
@@ -198,13 +204,13 @@ function getLichThiDau(url, callback) {
                                     time_start: time_start1,
                                     LeagueID: id_tour,
                                     date_query: time_start2,
-                                    link_match:link_match
+                                    link_match: link_match
                                 }
-                                var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"'+ ' LIMIT 1';
+                                var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"' + ' LIMIT 1';
                                 connection.query(queryString, function (err, rows, fields) {
                                     if (err) throw err;
                                     if (rows.length > 0) {
-                                        connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + id_tour + ' AND time_start=' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"'+ ' LIMIT 1', metadata, function (error, result) {
+                                        connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + id_tour + ' AND time_start=' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"' + ' LIMIT 1', metadata, function (error, result) {
                                             if (!error) {
                                                 console.log('update ketqua success');
                                             } else {
@@ -293,13 +299,13 @@ function getBangXepHang(url, callback) {
                 goal[0] = goal[0].trim();
 
                 var metadata = {
-                    id: '"'+stt+'"',
+                    id: '"' + stt + '"',
                     football_club_name: football_club_name,
                     total_match: total_match,
                     point: point,
-                    total_win: '"'+total_win+'"',
-                    total_draw: '"'+total_draw+'"',
-                    total_lose: '"'+total_lose+'"',
+                    total_win: '"' + total_win + '"',
+                    total_draw: '"' + total_draw + '"',
+                    total_lose: '"' + total_lose + '"',
                     goal: goal[0]
                 }
                 table.push(metadata);
@@ -361,9 +367,9 @@ function getBangXepHangCacNam(url, callback) {
     });
 }
 
-var lis_tab_laydoibong = [3,7,2,5,53,1];
+var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
 
-function  genListDoiBong(url, callback) {
+function genListDoiBong(url, callback) {
     request(url, function (err, res, body) {
         if (!err && res.statusCode == 200) {
             var $ = cheerio.load(body);
@@ -371,7 +377,7 @@ function  genListDoiBong(url, callback) {
                 var name = $(this).text().trim();
 
                 var nn = ChangeToSlug(name);
-                nn=nn.replace(' ','_');
+                nn = nn.replace(' ', '_');
                 name1 = nn + '_fc';
                 var data = {
                     name: name,
@@ -391,29 +397,8 @@ function  genListDoiBong(url, callback) {
     });
 }
 
-function  LiveScore(url, callback) {
-    process.env.TZ = 'Asia/Ho_Chi_Minh';
-
-    var date1 = new Date(Date.now() - 900000);
-    var date2 = new Date(Date.now() + 10800000);
-
-    var date_botton = date1.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date1.getDate()+' '+date1.getHours()+':'+date1.getMinutes()+':'+date1.getSeconds();
-    var date_top = date2.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date2.getDate()+' '+date2.getHours()+':'+date2.getMinutes()+':'+date2.getSeconds();
-
-    var queryString = "SELECT*FROM ketqua WHERE time_start BETWEEN "+"'"+date_botton+"'"+" AND "+"'"+date_top+"'"+" ORDER BY time_start DESC";
-
-    connection.query(queryString, function (error, result) {
-        if (!error) {
-            console.log(result);
-        } else {
-            console.log(error);
-        }
-    });
-}
-
-function ChangeToSlug(title)
-{
-    var  slug;
+function ChangeToSlug(title) {
+    var slug;
     slug = title.toLowerCase();
     //Đổi ký tự có dấu thành không dấu
     slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
@@ -438,21 +423,22 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-//các hàm chạy job
-for (var $i = 0; $i < list_doi_bong.length; $i++) {
-    var leagueID = list_doi_bong[$i].LeagueID;
-    if (typeof leagueID != 'undefined') {
-        getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
-        getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
-    }
-}
 
-for (var $i = 0; $i < list_doi_bong.length; $i++) {
-    var leagueID = list_doi_bong[$i].LeagueID;
-    if (typeof leagueID != 'undefined') {
-        getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID);
-    }
-}
+//các hàm chạy job
+// for (var $i = 0; $i < list_doi_bong.length; $i++) {
+//     var leagueID = list_doi_bong[$i].LeagueID;
+//     if (typeof leagueID != 'undefined') {
+//         getLichThiDau('http://bongdaso.com/_ComingMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1&Odd=1');
+//         getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1');
+//     }
+// }
+//
+// for (var $i = 0; $i < list_doi_bong.length; $i++) {
+//     var leagueID = list_doi_bong[$i].LeagueID;
+//     if (typeof leagueID != 'undefined') {
+//         getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID);
+//     }
+// }
 
 //các hàm chạy 1 lần
 // getListTeam();
@@ -476,8 +462,13 @@ for (var $i = 0; $i < list_doi_bong.length; $i++) {
 //     genListDoiBong('http://bongdaso.com/Association.aspx?FBAssID='+lis_tab_laydoibong[$i]+'&Tab=1');
 //  }
 
-LiveScore();
 
+app.set('view engine','ejs');
+require('./app/routes.js')(app,connection,server);
+
+server.listen(port, '127.0.0.1', function (err) {
+    console.log('listen port: ', port);
+});
 
 
 
