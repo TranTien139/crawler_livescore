@@ -33,4 +33,47 @@ function LiveScore(id, connection,callback) {
     });
 }
 
+function GetLineup(link,request,cheerio,callback) {
+    request(link, function (err, request, body) {
+        if (!err && request.statusCode == 200) {
+            var $ = cheerio.load(body);
+            var list_lineup = [];
+            var list_seperate = [];
+            var check = 0;
+            var name_team = '';
+            $('.squad_table > table > tr').each(function () {
+
+                if (check === 1) {
+                    var number = $(this).children().eq(0).text();
+                    var name = $(this).children().eq(1).text();
+                    list_lineup.push({number:number,name:name});
+                }
+
+                if (check === 2) {
+                    var number = $(this).children().eq(0).text();
+                    var name = $(this).children().eq(1).text();
+                    list_seperate.push({number:number,name:name});
+                }
+
+                if ($(this).attr('class') === 'tbl_title') {
+                    name_team = $(this).children().text();
+                    check = 1;
+                }
+
+                if ($(this).attr('class') === 'fixture_separator') {
+                    check = 2;
+                }
+
+            });
+
+            var data = {name_team:name_team, list_lineup:list_lineup,list_lineup:list_lineup}
+
+            callback(null,data);
+        } else {
+            callback(err, null);
+        }
+    });
+}
+
 module.exports.LiveScore =  LiveScore;
+module.exports.GetLineup =  GetLineup;
