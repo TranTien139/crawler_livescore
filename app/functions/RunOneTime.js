@@ -28,6 +28,7 @@ function genListDoiBong(url,connection,request,cheerio,callback) {
                 var name = $(this).text().trim();
 
                 var nn = common.ChangeToSlug(name);
+                nn = nn.trim();
                 nn = nn.replace(' ', '_');
                 name1 = nn + '_fc';
                 var data = {

@@ -29,7 +29,7 @@ var list_doi_bong = [{
     {
         "LeagueID": 3,
         "name": "Bóng Đá Ý",
-        "flag": "http://img.kenhthethao.vn/2017/05/flag-Y2.png",
+        "flag": "http://img.blogtamsu.vn/2017/05/flag-Y2.png",
         "order_giai_dau": 0
     },
     {
@@ -40,7 +40,7 @@ var list_doi_bong = [{
     },
     {
         "LeagueID": 9,
-        "name": "Euro Paleague",
+        "name": "Europa League",
         "flag": "http://img.kenhthethao.vn/2017/05/football_icon.png",
         "order_giai_dau": 0
     },

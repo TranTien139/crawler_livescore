@@ -1,3 +1,5 @@
+var function_use = require('./RunJob.js');
+
 function LiveScore(id, connection,callback) {
 
     // process.env.TZ = 'Asia/Ho_Chi_Minh';
@@ -6,7 +8,7 @@ function LiveScore(id, connection,callback) {
     // var date2 = new Date(Date.now() + 10800000);
     //
     // var date_botton = date1.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date1.getDate()+' '+date1.getHours()+':'+date1.getMinutes()+':'+date1.getSeconds();
-    // var date_top = date2.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date2.getDate()+' '+date2.getHours()+':'+date2.getMinutes()+':'+date2.getSeconds();
+    // var date_top = date2.getFullYear()+'-'+(date2.getMonth()+1)+'-'+date2.getDate()+' '+date2.getHours()+':'+date2.getMinutes()+':'+date2.getSeconds();
     //
 
     var queryString = "SELECT*FROM ketqua WHERE id = " + id + " LIMIT 1";
@@ -75,5 +77,32 @@ function GetLineup(link,request,cheerio,callback) {
     });
 }
 
+function UpdateDienBienTranDauDangDienRa(request, cheerio,connection,callback) {
+
+    process.env.TZ = 'Asia/Ho_Chi_Minh';
+
+    var date1 = new Date(Date.now() - 36000);
+    var date2 = new Date(Date.now() + 7200000);
+
+    var date_botton = date1.getFullYear()+'-'+(date1.getMonth()+1)+'-'+date1.getDate()+' '+date1.getHours()+':'+date1.getMinutes()+':'+date1.getSeconds();
+    var date_top = date2.getFullYear()+'-'+(date2.getMonth()+1)+'-'+date2.getDate()+' '+date2.getHours()+':'+date2.getMinutes()+':'+date2.getSeconds();
+
+    var queryString = "SELECT*FROM ketqua WHERE time_start BETWEEN '"+date_botton+"' AND '"+date_top+"'";
+
+    connection.query(queryString, function (error, result) {
+        if (!error) {
+            if(result.length>0) {
+                for ($i = 0; $i < result.length; $i++) {
+                    function_use.LuuDienBienTranDau(result[$i].id, 'lineup', request, cheerio, connection);
+                    function_use.LuuDienBienTranDau(result[$i].id, 'casting', request, cheerio, connection);
+                }
+            }
+        } else {
+        }
+    });
+}
+
+
 module.exports.LiveScore =  LiveScore;
 module.exports.GetLineup =  GetLineup;
+module.exports.UpdateDienBienTranDauDangDienRa =  UpdateDienBienTranDauDangDienRa;

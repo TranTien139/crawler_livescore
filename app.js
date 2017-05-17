@@ -2,7 +2,6 @@ var express = require('express')
 var app = express();
 var cheerio = require('cheerio');
 var request = require('request');
-var fs = require('fs');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
 var CronJob = require('cron').CronJob;
@@ -25,9 +24,11 @@ connection.connect();
 var job_result  = require('./app/functions/RunJob.js');
 var init = require('./app/functions/RunOneTime.js');
 var list_doi_bong = require('./app/constant/const.js');
+var live = require('./app/functions/live.js');
 var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
 
-new CronJob('*/30 * * * * *', function () {
+
+ new CronJob('* */6 * * * *', function () {
 
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         var leagueID = list_doi_bong[$i].LeagueID;
@@ -37,9 +38,10 @@ new CronJob('*/30 * * * * *', function () {
         }
     }
 
-}, null, true, 'Asia/Ho_Chi_Minh');
+ }, null, true, 'Asia/Ho_Chi_Minh');
 
-new CronJob('* * */2 * * *', function () {
+
+new CronJob('* * */4 * * *', function () {
 
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         var leagueID = list_doi_bong[$i].LeagueID;
@@ -50,8 +52,15 @@ new CronJob('* * */2 * * *', function () {
 
 }, null, true, 'Asia/Ho_Chi_Minh');
 
+new CronJob('* * */24 * * *', function () {
+
+    live.UpdateDienBienTranDauDangDienRa(request, cheerio,connection);
+
+}, null, true, 'Asia/Ho_Chi_Minh');
+
+
 //ham chay 1 lam
-// init.getListTeam(connection,list_doi_bong);
+//init.getListTeam(connection,list_doi_bong);
 //
 // for (var $i = 0; $i < list_doi_bong.length; $i++) {
 //     var leagueID = list_doi_bong[$i].LeagueID;
@@ -91,7 +100,7 @@ function exitHandler(options, err) {
         process.exit();
 }
 
-process.on('exit', exitHandler.bind(null, {cleanup: true}));
+process.on('exit', exitHandler.bind('', {cleanup: true}));
 
 
 
