@@ -77,6 +77,39 @@ function GetLineup(link,request,cheerio,callback) {
     });
 }
 
+function GetCauThu(link,request,cheerio,callback) {
+    request(link, function (err, request, body) {
+        if (!err && request.statusCode == 200) {
+            var $ = cheerio.load(body);
+
+            var list_player = [];
+            var check = 0;
+            var name_team = '';
+            $('.xtip .boxBody > table > tr').each(function () {
+                var thumbnail = $(this).children('td').eq(0).children('img').attr('src');
+                var name = $(this).children('td').eq(1).children('table').children('tr').eq(0).children().children().text();
+                var position = $(this).children('td').eq(1).children('table').children('tr').eq(6).children('td').eq(1).text();
+                var date_of_birth = $(this).children('td').eq(1).children('table').children('tr').eq(1).children('td').eq(1).text();
+                var height = $(this).children('td').eq(1).children('table').children('tr').eq(4).children('td').eq(1).text();
+                height = height.replace(' m','');
+                var weight = $(this).children('td').eq(1).children('table').children('tr').eq(5).children('td').eq(1).text();
+                weight = weight.replace(' kg','');
+
+                var nation_tag = $(this).children('td').eq(1).children('table').children('tr').eq(3).children('td').eq(1).text();
+
+                var value = {name:name,thumbnail:thumbnail,position:position,date_of_birth:date_of_birth,height:height,weight:weight,nation_tag:nation_tag};
+                list_player.push(value);
+            });
+
+            var data = {list_player:list_player}
+
+            callback(null,data);
+        } else {
+            callback(err, null);
+        }
+    });
+}
+
 function UpdateDienBienTranDauDangDienRa(request, cheerio,connection,callback) {
 
     process.env.TZ = 'Asia/Ho_Chi_Minh';
@@ -106,3 +139,4 @@ function UpdateDienBienTranDauDangDienRa(request, cheerio,connection,callback) {
 module.exports.LiveScore =  LiveScore;
 module.exports.GetLineup =  GetLineup;
 module.exports.UpdateDienBienTranDauDangDienRa =  UpdateDienBienTranDauDangDienRa;
+module.exports.GetCauThu =  GetCauThu;

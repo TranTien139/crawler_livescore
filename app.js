@@ -41,16 +41,16 @@ var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
  }, null, true, 'Asia/Ho_Chi_Minh');
 
 
-new CronJob('* * */4 * * *', function () {
-
-    for (var $i = 0; $i < list_doi_bong.length; $i++) {
-        var leagueID = list_doi_bong[$i].LeagueID;
-        if (typeof leagueID != 'undefined') {
-            job_result.getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID,request, cheerio,connection);
-        }
-    }
-
-}, null, true, 'Asia/Ho_Chi_Minh');
+// new CronJob('* * */4 * * *', function () {
+//
+//     for (var $i = 0; $i < list_doi_bong.length; $i++) {
+//         var leagueID = list_doi_bong[$i].LeagueID;
+//         if (typeof leagueID != 'undefined') {
+//             job_result.getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID,request, cheerio,connection);
+//         }
+//     }
+//
+// }, null, true, 'Asia/Ho_Chi_Minh');
 
 new CronJob('* * */24 * * *', function () {
 

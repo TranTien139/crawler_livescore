@@ -103,4 +103,70 @@ module.exports = function (app, connection,request,cheerio,server) {
         }
     });
 
+    app.get('/listcauthu', function (req, res) {
+        var id_match = req.query.query;
+        if (typeof id_match != 'undefined') {
+            try {
+                live.LiveScore(id_match, connection, function (err, data) {
+                    if (err) {
+                        console.log(err);
+                        res.end();
+                    } else {
+                        if (data != null) {
+                            var link = data.link_match;
+                            var check_link = req.query.Data;
+
+
+                                var result_link = link + '&Data=lineup';
+
+
+
+                                var final = [];
+                                request(result_link, function (err, reques, body) {
+                                    if (!err && reques.statusCode == 200) {
+                                        var $ = cheerio.load(body);
+                                        var html = $.html();
+
+                                        try {
+
+                                            var result = html.replace(/<\/?[^>]+(>|$)/g, "");
+
+                                            var a = result.split("new AJAXObject('_HomeLineup_','");
+
+                                            var b = a[1].split("',0),new AJAXObject('_AwayLineup_','");
+
+                                            var c = b[1].split("',0),new AJAXObject('_OtherMatches_','");
+
+                                            var link1 = "http://bongdaso.com/" + b[0].trim();
+                                            var link2 = "http://bongdaso.com/" + c[0].trim();
+
+
+                                            live.GetCauThu(link1, request, cheerio, function (err, data) {
+                                                final.push(data);
+                                                res.json(final);
+                                            });
+                                        } catch (err) {
+                                            res.json(final);
+                                        }
+                                    } else {
+                                        console.log(err);
+                                    }
+                                });
+
+
+                        } else {
+                            res.end();
+                        }
+                    }
+                });
+            }catch (err){
+                console.log(err);
+                res.end();
+            }
+        } else {
+            res.end();
+        }
+    });
+
+
 };
