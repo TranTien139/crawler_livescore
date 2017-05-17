@@ -58,33 +58,14 @@ function getKetQuaThiDau(url,request,cheerio,connection,callback) {
                                 }
 
                                 var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + "'" + time_start1 + "'" + ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1";
-                                connection.query(queryString, function (err, rows, fields) {
-                                    if (err) throw err;
-                                    if (rows.length > 0) {
-                                        connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + id_tour + ' AND time_start=' + "'" + time_start1 + "'" + ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1", metadata, function (error, result) {
-                                            if (!error) {
-                                                console.log('update ketqua success');
-                                            } else {
-                                                console.log(error);
-                                            }
-                                        });
-                                    } else {
-                                        connection.query('INSERT INTO ketqua SET ?', metadata, function (error, result) {
-                                            if (!error) {
-                                                console.log('insert ketqua success');
-                                            } else {
-                                                console.log(error);
-                                            }
-                                        });
-                                    }
-                                });
+                                UpdateKetQua(queryString,connection,metadata);
                             }
                         }
                     }
                 });
             });
         } else {
-            console.log(err);
+            callback(err, null);
         }
     });
 }
@@ -142,33 +123,14 @@ function getLichThiDau(url,request,cheerio,connection,callback) {
                                     link_match: link_match
                                 }
                                 var queryString = 'SELECT*FROM ketqua WHERE LeagueID = ' + id_tour + ' AND time_start = ' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"' + ' LIMIT 1';
-                                connection.query(queryString, function (err, rows, fields) {
-                                    if (err) throw err;
-                                    if (rows.length > 0) {
-                                        connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + id_tour + ' AND time_start=' + '"' + time_start1 + '"' + ' AND home_club_name = ' + '"' + metadata.home_club_name + '"' + ' LIMIT 1', metadata, function (error, result) {
-                                            if (!error) {
-                                                console.log('update ketqua success');
-                                            } else {
-                                                console.log(error);
-                                            }
-                                        });
-                                    } else {
-                                        connection.query('INSERT INTO ketqua SET ?', metadata, function (error, result) {
-                                            if (!error) {
-                                                console.log('insert ketqua success');
-                                            } else {
-                                                console.log(error);
-                                            }
-                                        });
-                                    }
-                                });
+                                UpdateKetQua(queryString,connection,metadata);
                             }
                         }
                     }
                 });
             });
         } else {
-            console.log(err);
+            callback(err, null);
         }
     });
 }
@@ -239,28 +201,54 @@ function getBangXepHang(url,request,cheerio,connection, callback) {
             }
 
             var queryString = 'SELECT*FROM bang_xep_hang WHERE LeagueID = ' + LeagueID + ' AND seasion = ' + '"' + season_time_name + '"';
-            connection.query(queryString, function (err, rows, fields) {
-                if (err) throw err;
-                if (rows.length > 0) {
-                    connection.query('UPDATE bang_xep_hang SET ? WHERE LeagueID = ' + LeagueID + ' AND seasion = ' + '"' + season_time_name + '"', data, function (error, result) {
-                        if (!error) {
-                            console.log('update success');
-                        } else {
-                            console.log(error);
-                        }
-                    });
+            UpdateBangXepHang(queryString,connection,data);
+        } else {
+            callback(err, null);
+        }
+    });
+}
+
+function UpdateKetQua(queryString,connection,metadata,callback) {
+    connection.query(queryString, function (err, rows, fields) {
+        if (rows.length > 0) {
+            connection.query('UPDATE ketqua SET ? WHERE LeagueID = ' + connection.LeagueID + ' AND time_start=' + "'" + connection.time_start + "'" + ' AND home_club_name = ' + "'" + metadata.home_club_name + "'" + " LIMIT 1", metadata, function (error, result) {
+                if (!error) {
+                    console.log('success');
                 } else {
-                    connection.query('INSERT INTO bang_xep_hang SET ?', data, function (error, result) {
-                        if (!error) {
-                            console.log('insert success');
-                        } else {
-                            console.log(error);
-                        }
-                    });
+                    console.log('loi');
                 }
             });
         } else {
-            console.log(err);
+            connection.query('INSERT INTO ketqua SET ?', metadata, function (error, result) {
+                if (!error) {
+                    console.log('success');
+                } else {
+                    console.log('loi');
+                }
+            });
+        }
+    });
+}
+
+function  UpdateBangXepHang(queryString,connection,data,callback) {
+    connection.query(queryString, function (err, rows, fields) {
+        if (err) throw err;
+        if (rows.length > 0) {
+            connection.query('UPDATE bang_xep_hang SET ? WHERE LeagueID = ' + data.LeagueID + ' AND seasion = ' + '"' + data.seasion + '"', data, function (error, result) {
+                if (!error) {
+console.log('success');
+                } else {
+                    console.log('loi');
+                }
+            });
+        } else {
+            connection.query('INSERT INTO bang_xep_hang SET ?', data, function (error, result) {
+                if (!error) {
+                    console.log('success');
+                } else {
+                    console.log('loi');
+                }
+            });
         }
     });
 }

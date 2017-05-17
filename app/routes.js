@@ -1,7 +1,7 @@
 var live = require('./functions/live.js');
 var common = require('./functions/common.js');
 
-module.exports = function (app, connection, server) {
+module.exports = function (app, connection,request,cheerio,server) {
 
     app.get('/live', function (req, res) {
         var id_match = req.query.query;
@@ -27,21 +27,25 @@ module.exports = function (app, connection, server) {
                                 if (!err && reques.statusCode == 200) {
                                     var $ = cheerio.load(body);
                                     var html = $.html();
-                                    var result = html.replace(/<\/?[^>]+(>|$)/g, "");
-                                    var a= result.split("new AJAXObject('_HomeLineup_','");
-                                    var b= a[1].split("',0),new AJAXObject('_AwayLineup_','");
-                                    var c= b[1].split("',0),new AJAXObject('_OtherMatches_','");
+                                    try {
+                                        var result = html.replace(/<\/?[^>]+(>|$)/g, "");
+                                        var a = result.split("new AJAXObject('_HomeLineup_','");
+                                        var b = a[1].split("',0),new AJAXObject('_AwayLineup_','");
+                                        var c = b[1].split("',0),new AJAXObject('_OtherMatches_','");
 
-                                    var link1 = "http://bongdaso.com/"+b[0];
-                                    var link2 = "http://bongdaso.com/"+c[0];
+                                        var link1 = "http://bongdaso.com/" + b[0];
+                                        var link2 = "http://bongdaso.com/" + c[0];
 
-                                    live.GetLineup(link1,request,cheerio, function (err,data) {
-                                        final.push(data);
-                                        live.GetLineup(link2,request,cheerio, function (err,data1) {
-                                            final.push(data1);
-                                            res.json(final);
+                                        live.GetLineup(link1, request, cheerio, function (err, data) {
+                                            final.push(data);
+                                            live.GetLineup(link2, request, cheerio, function (err, data1) {
+                                                final.push(data1);
+                                                res.json(final);
+                                            });
                                         });
-                                    });
+                                    }catch (err){
+                                        res.json(final);
+                                    }
                                 } else {
                                     console.log(err);
                                 }

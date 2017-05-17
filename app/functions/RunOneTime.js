@@ -36,7 +36,7 @@ function genListDoiBong(url,connection,request,cheerio,callback) {
                 }
                 connection.query('INSERT INTO doi_bong SET ?', data, function (error, result) {
                     if (!error) {
-                        console.log('insert doi_bong success');
+
                     } else {
                         console.log(error);
                     }
@@ -51,7 +51,7 @@ function genListDoiBong(url,connection,request,cheerio,callback) {
 function getListTeam(connection,list_doi_bong,callback) {
     connection.query('TRUNCATE danh_sach_giai_dau', function (error, result) {
         if (!error) {
-            console.log('truncate danh_sach_giai_dau success');
+
         } else {
             console.log(error);
         }
@@ -59,7 +59,7 @@ function getListTeam(connection,list_doi_bong,callback) {
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         connection.query('INSERT INTO danh_sach_giai_dau SET ?', list_doi_bong[$i], function (error, result) {
             if (!error) {
-                console.log('insert danh_sach_giai_dau success');
+
             } else {
                 console.log(error);
             }

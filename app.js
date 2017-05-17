@@ -27,7 +27,7 @@ var init = require('./app/functions/RunOneTime.js');
 var list_doi_bong = require('./app/constant/const.js');
 var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
 
-new CronJob('* */30 * * * *', function () {
+new CronJob('*/30 * * * * *', function () {
 
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         var leagueID = list_doi_bong[$i].LeagueID;
@@ -36,15 +36,18 @@ new CronJob('* */30 * * * *', function () {
             job_result.getKetQuaThiDau('http://bongdaso.com/_PlayedMatches.aspx?LeagueID=' + leagueID + '&SeasonID=-1&Period=1',request, cheerio,connection);
         }
     }
+
 }, null, true, 'Asia/Ho_Chi_Minh');
 
 new CronJob('* * */2 * * *', function () {
+
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         var leagueID = list_doi_bong[$i].LeagueID;
         if (typeof leagueID != 'undefined') {
             job_result.getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID,request, cheerio,connection);
         }
     }
+
 }, null, true, 'Asia/Ho_Chi_Minh');
 
 //ham chay 1 lam
@@ -72,11 +75,23 @@ new CronJob('* * */2 * * *', function () {
 
 
 app.set('view engine', 'ejs');
-require('./app/routes.js')(app, connection, server);
+require('./app/routes.js')(app, connection,request,cheerio,server);
 
 server.listen(port, '127.0.0.1', function (err) {
     console.log('listen port: ', port);
 });
+
+function exitHandler(options, err) {
+    connection.end();
+    if (options.cleanup)
+        console.log('clean');
+    if (err)
+        console.log(err.stack);
+    if (options.exit)
+        process.exit();
+}
+
+process.on('exit', exitHandler.bind(null, {cleanup: true}));
 
 
 

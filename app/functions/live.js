@@ -66,7 +66,7 @@ function GetLineup(link,request,cheerio,callback) {
 
             });
 
-            var data = {name_team:name_team, list_lineup:list_lineup,list_lineup:list_lineup}
+            var data = {name_team:name_team, list_lineup:list_lineup,list_seperate:list_seperate}
 
             callback(null,data);
         } else {
