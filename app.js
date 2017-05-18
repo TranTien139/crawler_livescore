@@ -39,7 +39,6 @@ var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
 
  }, null, true, 'Asia/Ho_Chi_Minh');
 
-
 new CronJob('*/30 * * *', function () {
 
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
@@ -57,7 +56,6 @@ new CronJob('*/15 * * * *', function () {
 
 }, null, true, 'Asia/Ho_Chi_Minh');
 
-
 //ham chay 1 lam
 //init.getListTeam(connection,list_doi_bong);
 //
@@ -68,9 +66,10 @@ new CronJob('*/15 * * * *', function () {
 //     }
 // }
 //
+
 // connection.query('truncate doi_bong', function (error, result) {
 //     if (!error) {
-//         console.log('truncate success');
+//
 //     } else {
 //         console.log(error);
 //     }
@@ -79,8 +78,30 @@ new CronJob('*/15 * * * *', function () {
 // for (var $i = 0; $i < lis_tab_laydoibong.length; $i++) {
 //     init.genListDoiBong('http://bongdaso.com/Association.aspx?FBAssID=' + lis_tab_laydoibong[$i] + '&Tab=1', connection,request,cheerio);
 // }
-//ket thuc ham chay 1 lan
 
+// connection.query('SELECT id,link_team FROM doi_bong', function (error, result) {
+//     if (!error) {
+//         for (var $i=0; $i< result.length; $i++){
+//               init.getLinkCralerPlayer(result[$i].id,result[$i].link_team,connection,request,cheerio);
+//         }
+//     } else {
+//         console.log(error);
+//     }
+// });
+
+connection.query('SELECT link_player FROM doi_bong', function (error, result) {
+    if (!error) {
+        for (var $i=0; $i< result.length; $i++){
+            if(result[$i].link_player !='') {
+                live.GetCauThu(result[$i].link_player,connection,request, cheerio);
+            }
+        }
+    } else {
+        console.log(error);
+    }
+});
+
+//ket thuc ham chay 1 lan
 
 app.set('view engine', 'ejs');
 require('./app/routes.js')(app, connection,request,cheerio,server);

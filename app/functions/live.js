@@ -70,11 +70,7 @@ function GetLineup(link, request, cheerio, check_team, callback) {
 
             });
 
-            if (check_team === 'home') {
-                var data = {home: {list_lineup: list_lineup, list_seperate: list_seperate}}
-            } else {
-                var data = {away: {list_lineup: list_lineup, list_seperate: list_seperate}}
-            }
+            var data = {list_lineup: list_lineup, list_seperate: list_seperate}
 
             callback(null, data);
         } else {
@@ -83,7 +79,7 @@ function GetLineup(link, request, cheerio, check_team, callback) {
     });
 }
 
-function GetCauThu(link, request, cheerio, callback) {
+function GetCauThu(link,connection,request, cheerio, callback) {
     request(link, function (err, request, body) {
         if (!err && request.statusCode == 200) {
             var $ = cheerio.load(body);
@@ -91,35 +87,37 @@ function GetCauThu(link, request, cheerio, callback) {
             var list_player = [];
             var check = 0;
             var name_team = '';
-            $('.xtip .boxBody > table > tr').each(function () {
-                var thumbnail = $(this).children('td').eq(0).children('img').attr('src');
-                var name = $(this).children('td').eq(1).children('table').children('tr').eq(0).children().children().text();
-                var position = $(this).children('td').eq(1).children('table').children('tr').eq(6).children('td').eq(1).text();
-                var date_of_birth = $(this).children('td').eq(1).children('table').children('tr').eq(1).children('td').eq(1).text();
-                var height = $(this).children('td').eq(1).children('table').children('tr').eq(4).children('td').eq(1).text();
-                height = height.replace(' m', '');
-                var weight = $(this).children('td').eq(1).children('table').children('tr').eq(5).children('td').eq(1).text();
-                weight = weight.replace(' kg', '');
+            $('.squad_table > table > tr > TD:nth-child(2n)').each(function () {
 
-                var nation_tag = $(this).children('td').eq(1).children('table').children('tr').eq(3).children('td').eq(1).text();
+                var name = $(this).children('div').attr('id');
+                var number = $(this).prev().text();
+                console.log(number);
 
-                var value = {
-                    name: name,
-                    thumbnail: thumbnail,
-                    position: position,
-                    date_of_birth: date_of_birth,
-                    height: height,
-                    weight: weight,
-                    nation_tag: nation_tag
-                };
-                list_player.push(value);
+                // var thumbnail = $(this).children('td').eq(0).children('img').attr('src');
+                // var name = $(this).children('td').eq(1).children('table').children('tr').eq(0).children().children().text();
+                // var position = $(this).children('td').eq(1).children('table').children('tr').eq(6).children('td').eq(1).text();
+                // var date_of_birth = $(this).children('td').eq(1).children('table').children('tr').eq(1).children('td').eq(1).text();
+                // var height = $(this).children('td').eq(1).children('table').children('tr').eq(4).children('td').eq(1).text();
+                // height = height.replace(' m', '');
+                // var weight = $(this).children('td').eq(1).children('table').children('tr').eq(5).children('td').eq(1).text();
+                // weight = weight.replace(' kg', '');
+                //
+                // var nation_tag = $(this).children('td').eq(1).children('table').children('tr').eq(3).children('td').eq(1).text();
+                //
+                // var value = {
+                //     name: name,
+                //     thumbnail: thumbnail,
+                //     position: position,
+                //     date_of_birth: date_of_birth,
+                //     height: height,
+                //     weight: weight,
+                //     nation_tag: nation_tag
+                // };
+
             });
 
-            var data = {list_player: list_player}
-
-            callback(null, data);
         } else {
-            callback(err, null);
+            console.log(err);
         }
     });
 }

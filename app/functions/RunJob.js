@@ -134,7 +134,6 @@ function getLichThiDau(url, request, cheerio, connection, callback) {
                                     link_match = 'http://bongdaso.com/' + link_match;
                                 }
 
-
                                 if (typeof  home != 'undefined' && typeof  guest != 'undefined' && typeof time_start1 != 'undefined') {
 
                                     var tag_home_name = '';
@@ -321,7 +320,7 @@ function LuuDienBienTranDau(id_match, check_link, request, cheerio, connection, 
                         }
 
                         if (check_link === 'lineup') {
-                            var final = [];
+                            var final = {};
                             request(result_link, function (err, reques, body) {
                                 if (!err && reques.statusCode == 200) {
                                     var $ = cheerio.load(body);
@@ -336,9 +335,9 @@ function LuuDienBienTranDau(id_match, check_link, request, cheerio, connection, 
                                         var link2 = "http://bongdaso.com/" + c[0].trim();
 
                                         live.GetLineup(link1, request, cheerio,'home',function (err, data) {
-                                            final.push(data);
+                                            final.home = data;
                                             live.GetLineup(link2, request, cheerio,'away',function (err, data1) {
-                                                final.push(data1);
+                                                final.away = data1;
                                                 final = JSON.stringify(final);
                                                 var metadata = {lineup:final};
                                                 connection.query('UPDATE ketqua SET ? WHERE id='+id_match+' LIMIT 1', metadata, function (error, result) {
@@ -382,7 +381,9 @@ function LuuDienBienTranDau(id_match, check_link, request, cheerio, connection, 
                                             var score = $(this).children().eq(2).text();
                                             var comment = $(this).children().eq(3).text();
                                             var data = {time: time, image: image, score: score, comment: comment};
-                                            list_casting.push(data);
+                                            if(time.trim() != '' && comment.trim() != '') {
+                                                list_casting.push(data);
+                                            }
                                         });
 
                                         list_casting = JSON.stringify(list_casting);
