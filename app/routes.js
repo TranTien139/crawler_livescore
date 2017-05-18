@@ -37,9 +37,9 @@ module.exports = function (app, connection,request,cheerio,server) {
                                             var link1 = "http://bongdaso.com/" + b[0].trim();
                                             var link2 = "http://bongdaso.com/" + c[0].trim();
 
-                                            live.GetLineup(link1, request, cheerio, function (err, data) {
+                                            live.GetLineup(link1, request, cheerio,'home',function (err, data) {
                                                 final.push(data);
-                                                live.GetLineup(link2, request, cheerio, function (err, data1) {
+                                                live.GetLineup(link2, request, cheerio,'away',function (err, data1) {
                                                     final.push(data1);
                                                     res.json(final);
                                                 });
@@ -116,10 +116,7 @@ module.exports = function (app, connection,request,cheerio,server) {
                             var link = data.link_match;
                             var check_link = req.query.Data;
 
-
                                 var result_link = link + '&Data=lineup';
-
-
 
                                 var final = [];
                                 request(result_link, function (err, reques, body) {
@@ -140,19 +137,19 @@ module.exports = function (app, connection,request,cheerio,server) {
                                             var link1 = "http://bongdaso.com/" + b[0].trim();
                                             var link2 = "http://bongdaso.com/" + c[0].trim();
 
-
                                             live.GetCauThu(link1, request, cheerio, function (err, data) {
                                                 final.push(data);
                                                 res.json(final);
                                             });
+
                                         } catch (err) {
                                             res.json(final);
                                         }
+
                                     } else {
                                         console.log(err);
                                     }
                                 });
-
 
                         } else {
                             res.end();
@@ -167,6 +164,5 @@ module.exports = function (app, connection,request,cheerio,server) {
             res.end();
         }
     });
-
 
 };

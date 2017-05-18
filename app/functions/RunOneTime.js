@@ -50,6 +50,7 @@ function genListDoiBong(url,connection,request,cheerio,callback) {
 }
 
 function getListTeam(connection,list_doi_bong,callback) {
+
     connection.query('TRUNCATE danh_sach_giai_dau', function (error, result) {
         if (!error) {
 
@@ -57,6 +58,7 @@ function getListTeam(connection,list_doi_bong,callback) {
             console.log(error);
         }
     });
+
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         connection.query('INSERT INTO danh_sach_giai_dau SET ?', list_doi_bong[$i], function (error, result) {
             if (!error) {
@@ -66,6 +68,7 @@ function getListTeam(connection,list_doi_bong,callback) {
             }
         });
     }
+
 }
 
 module.exports.getBangXepHangCacNam = getBangXepHangCacNam;

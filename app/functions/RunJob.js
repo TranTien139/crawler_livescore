@@ -84,10 +84,10 @@ function getKetQuaThiDau(url, request, cheerio, connection, callback) {
                     });
                 });
             } catch (err) {
-                console.log('co loi xay ra');
+                console.log('co loi xay ra ketquathidau');
             }
         } else {
-            console.log('co loi xay ra');
+            console.log('co loi xay ra ketquathidau');
         }
     });
 }
@@ -171,10 +171,10 @@ function getLichThiDau(url, request, cheerio, connection, callback) {
                     });
                 });
             } catch (err) {
-                console.log('co loi xay ra');
+                console.log('co loi xay ra lichthidau');
             }
         } else {
-            console.log('co loi xay ra');
+            console.log('co loi xay ra lichthidau');
         }
     });
 }
@@ -248,10 +248,10 @@ function getBangXepHang(url, request, cheerio, connection, callback) {
                 var queryString = 'SELECT*FROM bang_xep_hang WHERE LeagueID = ' + LeagueID + ' AND seasion = ' + '"' + season_time_name + '"';
                 UpdateBangXepHang(queryString, connection, data);
             } catch (err) {
-                console.log('co loi xay ra');
+                console.log('co loi xay ra bangxephang');
             }
         } else {
-            console.log('co loi xay ra');
+            console.log('co loi xay ra bangxephang');
         }
     });
 }
@@ -264,7 +264,7 @@ function UpdateKetQua(queryString, connection, metadata, callback) {
                     if (!error) {
                         console.log('update ketqua success');
                     } else {
-
+                        console.log('insert ketqua fail');
                     }
                 });
             }
@@ -273,7 +273,7 @@ function UpdateKetQua(queryString, connection, metadata, callback) {
                 if (!error) {
                     console.log('insert ketqua success');
                 } else {
-
+                    console.log('insert ketqua fail');
                 }
             });
         }
@@ -288,7 +288,7 @@ function UpdateBangXepHang(queryString, connection, data, callback) {
                 if (!error) {
                     console.log('update bang_xep_hang success');
                 } else {
-
+                    console.log('insert bang_xep_hang fail');
                 }
             });
         } else {
@@ -296,7 +296,7 @@ function UpdateBangXepHang(queryString, connection, data, callback) {
                 if (!error) {
                     console.log('insert bang_xep_hang success');
                 } else {
-
+                    console.log('insert bang_xep_hang fail');
                 }
             });
         }
@@ -335,15 +335,17 @@ function LuuDienBienTranDau(id_match, check_link, request, cheerio, connection, 
                                         var link1 = "http://bongdaso.com/" + b[0].trim();
                                         var link2 = "http://bongdaso.com/" + c[0].trim();
 
-                                        live.GetLineup(link1, request, cheerio, function (err, data) {
+                                        live.GetLineup(link1, request, cheerio,'home',function (err, data) {
                                             final.push(data);
-                                            live.GetLineup(link2, request, cheerio, function (err, data1) {
+                                            live.GetLineup(link2, request, cheerio,'away',function (err, data1) {
                                                 final.push(data1);
                                                 final = JSON.stringify(final);
                                                 var metadata = {lineup:final};
                                                 connection.query('UPDATE ketqua SET ? WHERE id='+id_match+' LIMIT 1', metadata, function (error, result) {
                                                     if (!error) {
                                                         console.log('update ketqua success');
+                                                    }else{
+                                                        console.log('update ketqua fail');
                                                     }
                                                 });
 
@@ -382,6 +384,7 @@ function LuuDienBienTranDau(id_match, check_link, request, cheerio, connection, 
                                             var data = {time: time, image: image, score: score, comment: comment};
                                             list_casting.push(data);
                                         });
+
                                         list_casting = JSON.stringify(list_casting);
                                         var metadata = {casting:list_casting};
                                         connection.query('UPDATE ketqua SET ? WHERE id ='+id_match+' LIMIT 1', metadata, function (error, result) {

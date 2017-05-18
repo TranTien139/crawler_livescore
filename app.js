@@ -27,8 +27,7 @@ var list_doi_bong = require('./app/constant/const.js');
 var live = require('./app/functions/live.js');
 var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
 
-
- new CronJob('* */6 * * * *', function () {
+ new CronJob('*/10 * * * *', function () {
 
     for (var $i = 0; $i < list_doi_bong.length; $i++) {
         var leagueID = list_doi_bong[$i].LeagueID;
@@ -41,18 +40,18 @@ var lis_tab_laydoibong = [3, 7, 2, 5, 53, 1];
  }, null, true, 'Asia/Ho_Chi_Minh');
 
 
-// new CronJob('* * */4 * * *', function () {
-//
-//     for (var $i = 0; $i < list_doi_bong.length; $i++) {
-//         var leagueID = list_doi_bong[$i].LeagueID;
-//         if (typeof leagueID != 'undefined') {
-//             job_result.getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID,request, cheerio,connection);
-//         }
-//     }
-//
-// }, null, true, 'Asia/Ho_Chi_Minh');
+new CronJob('*/30 * * *', function () {
 
-new CronJob('* * */24 * * *', function () {
+    for (var $i = 0; $i < list_doi_bong.length; $i++) {
+        var leagueID = list_doi_bong[$i].LeagueID;
+        if (typeof leagueID != 'undefined') {
+            job_result.getBangXepHang('http://bongdaso.com/Standing.aspx?LeagueID=' + leagueID,request, cheerio,connection);
+        }
+    }
+
+}, null, true, 'Asia/Ho_Chi_Minh');
+
+new CronJob('*/15 * * * *', function () {
 
     live.UpdateDienBienTranDauDangDienRa(request, cheerio,connection);
 
